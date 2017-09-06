@@ -47,6 +47,7 @@ class TestSubsets extends FunSuite with Checkers with Matchers with GeneratorDri
   test("k = 1") {
     forAll(cardinality) { n =>
       val subsets = Subsets.create(n, 1).toList
+      subsets should have size(n)
       forEvery(subsets) { l =>
         l should have(bitcount(1))
       }

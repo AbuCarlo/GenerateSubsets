@@ -1,8 +1,9 @@
 package com.aanassar.samples.subsets
 
+import scala.Iterator
 import scala.collection.immutable.BitSet
 
-object Subsets extends App {
+object Subsets {
   
   def toBitSet(l: Long) = BitSet.fromBitMaskNoCopy(Array(l))
 
@@ -16,7 +17,9 @@ object Subsets extends App {
       if (remaining == 0)
         Iterator(accumulation)
       else {
-      	// Not tail-recursive!
+      	// Not tail-recursive! Only when we've generated all the subsets 
+        // including the current index can we move on to the next possible position.
+        // Since we're only concatenating iterators, however, this will still be fast.
         (start to (n - remaining)).iterator.flatMap ({ shift =>
           val flipped = 1L << shift
           recurse(accumulation | flipped, shift + 1, remaining - 1)
@@ -26,16 +29,4 @@ object Subsets extends App {
 
     recurse(0, 0, k)
   }                                              
-
-  val bitsets = create(2, 1).map(toBitSet).toArray
-  
-  println(bitsets.mkString(", "))
-  
-  val names = Array("Tony", "Donavan", "Carlo", "Leo").sorted
-  
-  val familySubsets = create(names.size, 2).map(toBitSet).foreach { bitset =>
-    val clique = bitset.iterator.map(names(_))
-    println("Clique: " + clique.mkString(", "))
-  }
-
 }
