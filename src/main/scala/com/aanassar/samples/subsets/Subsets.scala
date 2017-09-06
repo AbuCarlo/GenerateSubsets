@@ -8,7 +8,7 @@ object Subsets {
   def toBitSet(l: Long) = BitSet.fromBitMaskNoCopy(Array(l))
 
   def create(n: Int, k: Int): Iterator[Long] = {
-    
+    require(k <= n, "k cannot be > n.")
     require(n >= 0, "A set cannot have a size < 0");
     require(n <= java.lang.Long.SIZE, "A set cannot have a size > 64");
     

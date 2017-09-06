@@ -1,7 +1,9 @@
 package com.aanassar.samples.subsets
 
+import org.apache.commons.math3.util.CombinatoricsUtils
 import org.junit.runner.RunWith
 import org.scalacheck.Gen
+import org.scalacheck.Prop.propBoolean
 import org.scalatest.FunSuite
 import org.scalatest.Inspectors.forEvery
 import org.scalatest.Matchers
@@ -39,17 +41,33 @@ class TestSubsets extends FunSuite with Checkers with Matchers with GeneratorDri
 
   test("Subsets of the empty set") {
     forAll(cardinality) { k =>
-      val subsets = Subsets.create(0, k).toArray
-      subsets should be(empty)
+      if (k > 0) {
+        intercept[IllegalArgumentException] {
+          Subsets.create(0, k).toArray
+        }
+      } else {
+        val subsets = Subsets.create(0, k)
+        subsets should have size(1)
+      }
     }
   }
 
   test("k = 1") {
     forAll(cardinality) { n =>
       val subsets = Subsets.create(n, 1).toList
-      subsets should have size(n)
+      subsets should have size (n)
       forEvery(subsets) { l =>
         l should have(bitcount(1))
+      }
+    }
+  }
+
+  test("Vary n, k") {
+    forAll(cardinality, cardinality) { (n, k) =>
+      (k < n) ==> {
+        val choose = CombinatoricsUtils.binomialCoefficient(n, k)
+        val subsets = Subsets.create(n, k).toList
+        subsets.size === choose
       }
     }
   }
